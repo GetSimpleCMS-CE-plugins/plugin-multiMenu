@@ -1,402 +1,459 @@
-
-
-<style>
-    .multiMenu input{
-width: 100%;
-padding:5px;
-box-sizing: border-box;
-margin-top: 5px;
-border:#ddd solid 1px;
-     }
-
-    .multiMenu{
-        display: flex;
-        flex-wrap: wrap;
-    }
-
-    .multiMenu label{
-        margin-left: 5px;
-    }
-
-    .multiMenu select{
-        width: 80%;
-        padding: 10px;
-        box-sizing: border-box;
-        background: none;
-        border:solid 1px #ddd;
-        margin-top: 20px;
-    }
-
-    .addToMenu{
-        display: inline-flex;
-        width: 20%;
-        margin: 0;
-        padding: 10px;
-        box-sizing: border-box;
-        margin-top: 20px;
-        border: none;
-        background: #000;
-        color:#fff;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .multiMenu input[type="checkbox"]{
-        all:revert;s
-    }
-
-.multiMenu-ul{
-width:100%;
-list-style-type:none;
-margin: 0 !important;
-padding: 0 !important;
- }
-
-.multiMenu-ul li{
-    border:solid 1px;
-    width: 100%;
-    padding:10px;
-    background: #fafafa;
-    border:solid 1px #ddd;
-    box-sizing:border-box;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 20px;
-    gap:20px;
-    align-items: center;
-}
-
-.multiMenu input[type="submit"]{
-    background: #000;
-    padding: 10px 15px;
-margin-top: 10px;
-    color:#fff;
-}
- 
-
-.nameMenu{
-    background: #fafafa;
-    border:solid 1px #ddd;
-    padding: 10px;
-}
-
-.closeMM{
-    background: red;
-    border:none;
-    color:#fff;
-    width:20px;
-    height:20px;
-}
-
-
-.parentHave{
-    border-left:solid 5px grey !important;
-}
-</style>
-
-
-
-<form class="multiMenu"method="post" action="<?php 
-
-if(isset($_GET['menuname'])){
-    echo $SITEURL.$GSADMIN.'/load.php?id=multiMenu&addMultiMenu&menuname='.$_GET['menuname'];
-} 
- 
-
-
-;?>">
-
-<label for="name">Name menu for function without spacebar</label>
-<input type="text" name="nameFile" value="<?php echo @$_GET['menuname'];?>" required pattern="[a-zA-Z0-9]+">
-
-<div style="width:100%; margin:10px auto;background:#333; color:#fff !important;border:solid 1px #ddd;padding:10px 0;">
-<label for="" style="color:#fff; display:flex; justify-content:space-between;align-items:center;"><span>Show Menu name on frontend?</span><input type="checkbox" class="check" value="yes" name="front"></label>
-</div>
-
-<div style="width:100%" class="hidecheck nameMenu">
-<label for="name">Name menu on frontend</label>
-<input type="text" name="nameFront" value="
-
-<?php 
-
-if(isset($_GET['menuname'])){
-    $files = file_get_contents(GSDATAOTHERPATH.'multiMenu/'.$_GET['menuname'].'.json');
-    $reJsonFiles = json_decode($files);
-    
-   echo $reJsonFiles->name;
-}
-
-
-;?>
-
-" >
-</div>
-
-
-<select class="selectMultiMenu">
-
- <?php 
-
-foreach(glob(GSDATAPAGESPATH.'*.xml') as $file){
-$page = getXML($file);
-
-
- if(!empty($page->parent)){
-    $parents = $page->parent.'/';
-    $parentsN = $page->parent;
- }else{
-    $parents = "";
-    $parentsN='';
- };
-
-
-echo '<option value="'.$parents.$page->url.'~'.$page->menu.'~'.$parentsN.'"  >'.$page->title.'</option>';
-}
-;?>
- </select>
-
- <button class="addToMenu">Add this to menu</button>
-
-
-
- <h3 style="margin-top:20px;">Edit menu</h3>
-
- 
-
- <ul class="multiMenu-ul" id="sortable" style="text-align:center">
-<li>
-    <p style="margin:0;padding:0;color: #222;
-font-weight: bold;
-text-transform: uppercase;
-line-height: 20px !important;
-text-align: left;font-size:11px;
-text-align:center;">Link</p>
-    <p style="margin:0;padding:0;color: #222;
-font-weight: bold;
-text-transform: uppercase;
-line-height: 20px !important;
-text-align: left;font-size:11px;text-align:center;">Name</p>
-
-    <p style="margin:0;padding:0;color: #222;
-font-weight: bold;
-text-transform: uppercase;
-line-height: 20px !important;
-text-align: left;font-size:11px;text-align:center;">Parent Slug</p>
-</li>
-
-
-
-
-
-
-
 <?php
 
+	if (isset($_GET['menuname'])) {
+		$classFile = file_get_contents(GSDATAOTHERPATH . 'multiMenu/folderClass/' . $_GET['menuname'] . '-class.json');
+		$jsClass = json_decode($classFile);
+	};; ?>
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+	<link rel="stylesheet" href="<?php echo $SITEURL; ?>plugins/multiMenu/js/multiMenu.css" />
+
+	<style>
+		.multiMenu .btn-sm .fas {
+			color: #fff;
+		}
+		.multiMenu .list-group {
+			margin: 0 !important
+		}
+	</style>
+
+	<form method="POST">
+
+
+		<div class="row multiMenu">
+
+			<h3 class="lead mt-2 border-bottom pb-3"><?php echo i18n_r('multiMenu/CREATOR');?></h3>
+
+			<div class="col-md-12 d-flex align-items-center justify-content-end mb-4">
+				<a href="
+				<?php
+					global $SITEURL;
+					global $GSADMIN;
+
+					echo $SITEURL.$GSADMIN.'/load.php?id=multiMenu';
+				?>
+				" class="btn btn-dark btn-sm text-light text-decoration-none" style="text-decoration:none;">
+<?php echo i18n_r('multiMenu/BACKTOLIST');?>
+			</a>
+			</div>
+
+			<div class="col-md-12">
+
+				<div class="card-header bg-primary text-white"><i class="fa-solid fa-file"></i> <?php echo i18n_r('multiMenu/TITLESETTINGS');?></div>
+
+				<div class="card-body border mb-2 rounded">
+					<div class="form-group">
+						<label for="title"> <?php echo i18n_r('multiMenu/TITLELABEL');?></label>
+						<input type="text" required name="title" pattern="[a-zA-Z0-9]+" value="<?php
+																								if (isset($_GET['menuname'])) {
+																									echo $_GET['menuname'];
+																								} else {
+																									echo '';
+																								}; ?>" class="form-control mb-2">
+					</div>
+				</div>
+
+				<div class="card class-options mb-2 ">
+					<div class="card-header bg-primary text-light"><i class="fa-solid fa-code"></i> <?php echo i18n_r('multiMenu/CUSTOMCLASS');?></div>
+					<div class="card-body text-light">
+						<label>
+							<input type="radio" name="active" value="a" <?php
+																		if (isset($_GET['menuname'])) {
+
+																			if ($jsClass->active == 'a') {
+																				echo 'checked';
+																			}
+																		}; ?>> <?php echo i18n_r('multiMenu/ACTIVECLASSLABEL');?> [a]
+						</label>
+
+						<label>
+							<input type="radio" name="active" value="li" class="ml-2" <?php
+																						if (isset($_GET['menuname'])) {
+																							if ($jsClass->active == 'li') {
+																								echo 'checked';
+																							}
+																						}; ?>> <?php echo i18n_r('multiMenu/ACTIVECLASSLABEL');?> [li]
+						</label>
+
+						<div class="form-group">
+							<label for="title"> <?php echo i18n_r('multiMenu/CLASSFORMENU');?></label>
+							<input type="text" name="classul" <?php
+																if (isset($_GET['menuname'])) {
+																	echo  'value="' . $jsClass->classul . '" ';
+																}; ?> class=" form-control mb-2">
+						</div>
+
+						<div class="form-group">
+							<label for="title"> <?php echo i18n_r('multiMenu/CLASSFORMENU');?> > li</label>
+							<input type="text" name="classulli" <?php
+																if (isset($_GET['menuname'])) {
+																	echo  'value="' . $jsClass->classulli . '" ';
+																}; ?> class="form-control mb-2">
+						</div>
+
+						<div class="form-group">
+							<label for="title"> <?php echo i18n_r('multiMenu/CLASSFORMENU');?> > li > a</label>
+							<input type="text" name="classullia" <?php
+																	if (isset($_GET['menuname'])) {
+																		echo  'value="' . $jsClass->classullia . '" ';
+																	}; ?> class="form-control mb-2">
+						</div>
+
+						<div class="form-group">
+							<label for="title"> <?php echo i18n_r('multiMenu/CLASSFORMENU');?> > li > ul</label>
+							<input type="text" name="classulliul" <?php
+																	if (isset($_GET['menuname'])) {
+																		echo  'value="' . $jsClass->classulliul . '" ';
+																	}; ?> class="form-control mb-2">
+						</div>
+
+						<div class="form-group">
+							<label for="title"> <?php echo i18n_r('multiMenu/CLASSFORMENU');?> > li > ul > li</label>
+							<input type="text" name="classulliulli" <?php
+																	if (isset($_GET['menuname'])) {
+																		echo  'value="' . $jsClass->classulliulli . '" ';
+																	}; ?> class="form-control mb-2">
+						</div>
+
+						<div class="form-group">
+							<label for="title"> <?php echo i18n_r('multiMenu/CLASSFORMENU');?> > li > ul > li > a</label>
+							<input type="text" name="classulliullia" <?php
+																		if (isset($_GET['menuname'])) {
+																			echo  'value="' . $jsClass->classulliullia . '" ';
+																		}; ?> class="form-control mb-2">
+						</div>
+
+					</div>
+				</div>
+
+				<div class="card border-primary mb-3 edit-items">
+					<div class="card-header bg-primary text-white"><i class="fa-solid fa-link"></i> <?php echo i18n_r('multiMenu/EDITITEMS');?></div>
+					<div class="card-body">
+						<div id="frmEdit" class="form-horizontal">
+							<div class="form-group">
+								<label for="text"><?php echo i18n_r('multiMenu/TITLE');?></label>
+								<div class="input-group">
+									<input type="text" class="form-control item-menu" name="text" id="text" placeholder="<?php echo i18n_r('multiMenu/TITLE');?>">
+
+								</div>
+								<input type="hidden" name="icon" class="item-menu">
+							</div>
+
+							<div class="form-group">
+								<label for="href"><?php echo i18n_r('multiMenu/URL');?></label>
+								<select type="text" class="form-control item-menu href-maker" id="href" name="href" placeholder="<?php echo i18n_r('multiMenu/URL');?>">
+									<option value="extlink" class="form-control"><?php echo i18n_r('multiMenu/EXTLINK');?></option>
+									<?php
+
+
+									foreach (glob(GSDATAPAGESPATH . '*xml') as $file) {
+
+										$pureFile = pathinfo($file)['filename'];
+										$xml = simplexml_load_file($file);
+
+
+										echo '<option value="' . $pureFile . '">' . $xml->title . '</option>';
+									};
+									?>
+								</select>
+							</div>
+
+							<div class="form-group">
+								<label for="target"><?php echo i18n_r('multiMenu/TARGET');?></label>
+								<select name="target" id="target" class="form-control item-menu">
+									<option value="_self">Self</option>
+									<option value="_blank">Blank</option>
+									<option value="_top">Top</option>
+								</select>
+							</div>
+							<div class="form-group d-none">
+								<label for="title">Tooltip</label>
+								<input type="text" name="titletooltip" class="form-control item-menu" id="title" placeholder="Tooltip">
+							</div>
+						</div>
+
+						<div class="border p-2 bg-light">
+							<button type="button" id="btnUpdate" class="btn btn-primary" disabled><i class="fas fa-sync-alt"></i>
+<?php echo i18n_r('multiMenu/UPDATE');?>
+							</button>
+							<button type="button" id="btnAdd" class="btn btn-info"><i class="fas fa-plus"></i>
+								<?php echo i18n_r('multiMenu/ADD');?>
+								</button>
+						</div>
+
+					<div class="alert alert-success mt-2 alert-done d-none">
+<?php echo i18n_r('multiMenu/UPDATED');?>
+					</div>
+
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-12">
+				<div class="card mb-3">
+					<div class="card-header bg-info text-white">
+						<i class="fa-solid fa-bars"></i> <?php echo i18n_r('multiMenu/MENU');?>
+					</div>
+					<div class="card-body">
+						<ul id="myEditor" class="sortableLists list-group">
+						</ul>
+					</div>
+				</div>
+
+				<textarea id="out" class="form-control d-none" name="json" cols="50" rows="10"></textarea>
+
+				<div class="bg-light border mb-2 p-2 mt-2 d-flex ">
+					<input type="submit" value="<?php echo i18n_r('multiMenu/SAVEMENU');?>" name="submit" class="btn d-block btn-success">
+
+				</div>
+			</div>
+		</div>
+
+	</form>
+
+	<script src="<?php echo $SITEURL; ?>plugins/multiMenu/js/jquery-menu-editor.js"></script>
+
+	<script>
+		const ars = {
+			<?php
+				$count = 1;
+
+				foreach (glob(GSDATAPAGESPATH . '*xml') as $file) {
+					$pure = pathinfo($file)['filename'];
+					$xml = simplexml_load_file($file);
+
+					$filecount = count(glob(GSDATAPAGESPATH . '*xml'));
+
+					echo '"' . $pure . '":"' . $xml->title . '"';
+
+					if ($filecount > $count) {
+
+						echo ',';
+					};
+
+					$count++;
+				};
+			?>
+		};
+
+		var arrayjson =
+			<?php
+
+			if (isset($_GET['menuname'])) {
+				$folder        = GSDATAOTHERPATH . 'multiMenu/';
+				$filename      = $folder . $_GET['menuname'] . '.json';
+				echo  file_get_contents($filename);
+			} else {
+				echo '[]';
+			}; ?>
+
+		;
+
+		jQuery(document).ready(function() {
+
+
+
+			// icon picker options
+			var iconPickerOptions = {
+
+			};
+			// sortable list options
+			var sortableListOptions = {
+				placeholderCss: {
+					'background-color': "#cccccc"
+				}
+			};
+
+			var editor = new MenuEditor('myEditor', {
+				listOptions: sortableListOptions
+			});
+
+			editor.setData(arrayjson);
+
+			var str = editor.getString();
+			$("#out").text(str);
+
+			editor.setForm($('#frmEdit'));
+			editor.setUpdateButton($('#btnUpdate'));
+			$('#btnReload').on('click', function() {
+				editor.setData(arrayjson);
+				var str = editor.getString();
+				$("#out").text(str);
+			});
+
+			$('#btnOutput').on('click', function() {
+				var str = editor.getString();
+				$("#out").text(str);
+			});
+
+			$('#btnOutput').on('mousedown', function() {
+				var str = editor.getString();
+				$("#out").text(str);
+			});
+
+			$("#btnUpdate").click(function() {
+				editor.update();
+				var str = editor.getString();
+				$("#out").text(str);
+
+
+document.querySelector('.alert-done').classList.remove('d-none');
+setTimeout(()=>{
+	document.querySelector('.alert-done').classList.add('d-none');
+
+},1500);
+
+document.querySelector('.inputer').remove();
+document.querySelector('.href-maker').classList.add('item-menu');
+
+			});
+
+			$('#btnAdd').click(function() {
+				editor.add();
+				var str = editor.getString();
+				$("#out").text(str);
+			});
+
+
+			$('#myEditor').click(function() {
+				var str = editor.getString();
+				$("#out").text(str);
+			});
+
+			$('#href').click(function() {
+				$('#text').val(
+					ars[$('#href').val()]
+				);
+			});
 
+			//
+			document.querySelector('.class-options').style.cursor = "pointer";
+			document.querySelector('.class-options').querySelector('.card-body').classList.add('d-none');
+			document.querySelector('.class-options').querySelector('.card-header').addEventListener('click', () => {
+				document.querySelector('.class-options').querySelector('.card-body').classList.toggle('d-none');
+			});
 
-if(isset($_GET['menuname'])){
-    
-foreach($reJsonFiles->link as $key => $value){
-
-    echo '<li data-parent="'.$reJsonFiles->parents[$key].'" data-link="'.$value.'"><input type="text" name="link[]" value="'.$value.'"><input name="names[]" value="'.$reJsonFiles->names[$key].'"><input name="parents[]" value="'.$reJsonFiles->parents[$key].'">
-    
-    
-    <button class="closeMM">X</button>
-
- 
-    </li>';
-
-
-};
-}
-
- 
-
-;?>
-
- </ul>
- 
-
- <input type="submit" name="submit" value="save menu" >
-</form>
-
-
-
-
-
-<script>
-
-
-document.querySelector('.addToMenu').addEventListener('click',(e)=>{
-
-    e.preventDefault();
-
-    $ars = document.querySelector('.selectMultiMenu').value.split("~");
-
-
-    const lis = document.createElement('li');
-
-    const inputer = document.createElement('input');
-
-    inputer.setAttribute('type','text');
-    inputer.value =  $ars[0];
-    inputer.setAttribute('name','link[]');
-    
-    const inputer2 = document.createElement('input');
-    inputer2.value = $ars[1];
-    inputer2.setAttribute('name','names[]');
-
-
-   
-    const inputer3 = document.createElement('input');
-    inputer3.value = $ars[2];
-    inputer3.setAttribute('name','parents[]');
-
-    
-    document.querySelector('.multiMenu-ul').appendChild(lis);
-
-    const close = document.createElement('button');
-    close.innerHTML = 'X';
-  
-    close.classList.add('closeMM');
-
-
-    lis.appendChild(inputer);
-    lis.appendChild(inputer2);
-    lis.appendChild(inputer3);
-    lis.appendChild(close);
-    
-
-    
-document.querySelectorAll('.closeMM').forEach(x=>{
-
-x.addEventListener('click',e=>{
-e.preventDefault();
-x.parentElement.remove();
-    });
-
-})
-
-
- 
-
-
-
-})
-
-
- 
-
-
-
-document.querySelectorAll('.closeMM').forEach(x=>{
-
-x.addEventListener('click',e=>{
-e.preventDefault();
-x.parentElement.remove();
-    });
-
-})
-
-
-</script>
-
-
-<?php 
-
-if(isset($_GET['menuname'])){
-    $files = file_get_contents(GSDATAOTHERPATH.'multiMenu/'.$_GET['menuname'].'.json');
-    $reJsonFiles = json_decode($files);
-    
-   echo '<script>
-
-   if("'.$reJsonFiles->front.'" == "yes"){
-   document.querySelector(".check").checked = true;
-   };
-   </script>';
-}
-
-;?>
-
-
-<script>
-  $( function() {
-    $( "#sortable" ).sortable();
-  } );
-
-
-
-  document.querySelector('input[name="nameFile"]').addEventListener('keyup',(e)=>{
-
-    document.querySelector('.multiMenu').setAttribute('action', "<?php echo $SITEURL.$GSADMIN.'/load.php?id=multiMenu&addMultiMenu&menuname=';?>" + document.querySelector('input[name="nameFile"]').value);
-
-  });
-
-  
-  document.querySelectorAll('.multiMenu-ul li').forEach((x,c)=>{
-
-    if(x.dataset.parent !== '' && c !== 0){
-        x.classList.add('parentHave');
-    };
-
-  })
-  
-  </script>
-
- 
-
-<?php 
-
-if(isset($_POST['submit'])){
-
-    
-
-
-    $data = array();
-    $data['name'] = $_POST['nameFront'];
-    $data['front'] = @$_POST['front'];
-    $data['link'] = array();
-    $data['names'] = array();
-    $data['parents'] = array();
- 
-    foreach($_POST['link'] as $key=>$value){
-     $data['link'][$key] = $value;
-    };
-
-    foreach($_POST['names'] as $key=>$value){
-    $data['names'][$key] = $value;
-    };
-
-
-
-    foreach($_POST['parents'] as $key=>$value){
-    $data['parents'][$key] = $value;
-    };
-
-
-    $jsonData = json_encode($data);
-
- 
-// Set up the folder name and its permissions
-// Note the constant GSDATAOTHERPATH, which points to /path/to/getsimple/data/other/
-$folder        = GSDATAOTHERPATH . 'multiMenu/';
-$filename      = $folder .$_POST['nameFile'].'.json';
-$chmod_mode    = 0755;
-$folder_exists = file_exists($folder) || mkdir($folder, $chmod_mode);
- 
-// Save the file (assuming that the folder indeed exists)
-if ($folder_exists) {
-  file_put_contents($filename, $jsonData);
-
-  echo("<meta http-equiv='refresh' content='0'>");
-};
-
-
-
-};
-
-
-;?>
-
-
-
-
+
+			document.querySelector('.edit-items').style.cursor = "pointer";
+			document.querySelector('.edit-items').querySelector('.card-body').classList.add('d-none');
+			document.querySelector('.edit-items').querySelector('.card-header').addEventListener('click', () => {
+				document.querySelector('.edit-items').querySelector('.card-body').classList.toggle('d-none');
+			})
+
+			let count = 0;
+
+ 				if (document.querySelector('.href-maker').value == 'extlink') {
+					const inputer = document.createElement('input');
+					document.querySelector('.href-maker').classList.remove('item-menu');
+					inputer.setAttribute('name', 'href');
+					inputer.setAttribute('id', 'href');
+					inputer.setAttribute('placeholder', 'https://google.pl');
+					inputer.classList.add('item-menu', 'form-control', 'inputer', 'mt-2');
+
+
+					if (document.querySelector('.inputer') == undefined) {
+						document.querySelector('.href-maker').after(inputer);
+					};
+
+
+				} else {
+					if (document.querySelector('.inputer') !== null) {
+						document.querySelector('.inputer').remove();
+					}
+				};
+
+			document.querySelector('.href-maker').addEventListener('click', () => {
+				if (document.querySelector('.href-maker').value == 'extlink') {
+					const inputer = document.createElement('input');
+					document.querySelector('.href-maker').classList.remove('item-menu');
+					inputer.setAttribute('name', 'href');
+					inputer.setAttribute('id', 'href');
+					inputer.setAttribute('placeholder', 'https://google.pl')
+					inputer.classList.add('item-menu', 'form-control', 'inputer', 'mt-2');
+
+					if (document.querySelector('.inputer') == undefined) {
+						document.querySelector('.href-maker').after(inputer);
+					}
+
+				} else {
+					if (document.querySelector('.inputer') !== null) {
+						document.querySelector('.inputer').remove();
+						document.querySelector('.href-maker').classList.add('item-menu');
+					}
+				};
+			});
+
+
+document.querySelectorAll('.btnEdit').forEach((item, i) => {
+
+item.addEventListener('click',()=>{
+
+
+setTimeout(()=>{
+
+	if(document.querySelector('.href-maker').value !=='extlink'){
+		if(document.querySelector('.inputer')!==null){
+		document.querySelector('.inputer').remove();
+		document.querySelector('.href-maker').classList.add('item-menu');
+	}
+	}else{
+
+		const inputer = document.createElement('input');
+		document.querySelector('.href-maker').classList.remove('item-menu');
+		inputer.setAttribute('name', 'href');
+		inputer.setAttribute('id', 'href');
+		inputer.setAttribute('placeholder', 'https://google.pl');
+		inputer.value = arrayjson[i]['href'];
+		inputer.classList.add('item-menu', 'form-control', 'inputer', 'mt-2');
+
+		if (document.querySelector('.inputer') == undefined) {
+			document.querySelector('.href-maker').after(inputer);
+		};
+
+	};
+
+
+
+
+},100)
+
+	document.querySelector('.edit-items .card-body').classList.remove('d-none');
+
+});
+
+});
+
+
+		});
+	</script>
+
+<?php
+	if (isset($_POST['submit'])) {
+		global $SITEURL;
+		global $GSADMIN;
+		$folder        = GSDATAOTHERPATH . 'multiMenu/';
+		$filename      = $folder . $_POST['title'] . '.json';
+		$chmod_mode    = 0755;
+		$folder_exists = file_exists($folder) || mkdir($folder, $chmod_mode);
+		$jsonData = $_POST['json'];
+		$folderClass    = $folder . 'folderClass/';
+		$classFile = $folderClass . $_POST['title'] . '-class.json';
+
+		$jsonClass = array("active" => @$_POST['active'], "classul" => @$_POST['classul'], "classulli" => @$_POST['classulli'], "classullia" => @$_POST['classullia'], "classulliul" => @$_POST['classulliul'], "classulliulli" => @$_POST['classulliulli'], "classulliullia" => @$_POST['classulliullia']);
+
+		if (empty($_POST['json'])) {
+			$jsonData = '[]';
+		}
+
+		if ($folder_exists) {
+			file_put_contents($filename, $jsonData);
+			mkdir($folderClass, 0755);
+			file_put_contents($classFile, json_encode($jsonClass));
+
+			echo $_POST['title'];
+			echo ("<meta http-equiv='refresh' content='0'>");
+
+			echo '<script>window.location.href = "' . $SITEURL . $GSADMIN . '/load.php?id=multiMenu&addMultiMenu&menuname=' . $_POST['title'] . '"</script>';
+		};
+	};
+; ?>
