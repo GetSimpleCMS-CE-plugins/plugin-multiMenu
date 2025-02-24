@@ -4,22 +4,24 @@
 <div class="multiMenu">
 
 
-    <h3 class="lead mt-2 border-bottom pb-3"><?php echo i18n_r('multiMenu/LISTMENU');?></h3>
+    <h3 class="lead mt-2 border-bottom pb-3"><?php echo i18n_r('multiMenu/LISTMENU'); ?></h3>
 
 
     <div class="multimenu-add bg-light border p-2 mb-2">
         <a class="btn btn-primary btn-sm text-light text-decoration-none" style="text-decoration:none;"
-         href="<?php echo $SITEURL . $GSADMIN; ?>/load.php?id=multiMenu&addMultiMenu"><?php echo i18n_r('multiMenu/ADDMENU');?></a>
+            href="<?php echo $SITEURL . $GSADMIN; ?>/load.php?id=multiMenu&addMultiMenu"><?php echo i18n_r('multiMenu/ADDMENU'); ?></a>
+        <a class="btn btn-danger btn-sm text-light text-decoration-none" style="text-decoration:none;"
+            href="<?php echo $SITEURL . $GSADMIN; ?>/load.php?id=multiMenu&hideMenuSettings"><?php echo i18n_r('multiMenu/SHOWMENU'); ?></a>
     </div>
 
 
     <table class="tables text-center">
 
         <tr>
-            <th class="text-center"><?php echo i18n_r('multiMenu/NAME');?></th>
-            <th class="text-center"><?php echo i18n_r('multiMenu/CODE');?></th>
-            <th class="text-center"><?php echo i18n_r('multiMenu/EDIT');?></th>
-            <th class="text-center"><?php echo i18n_r('multiMenu/DELETE');?></th>
+            <th class="text-center"><?php echo i18n_r('multiMenu/NAME'); ?></th>
+            <th class="text-center"><?php echo i18n_r('multiMenu/CODE'); ?></th>
+            <th class="text-center"><?php echo i18n_r('multiMenu/EDIT'); ?></th>
+            <th class="text-center"><?php echo i18n_r('multiMenu/DELETE'); ?></th>
         </tr>
 
 
@@ -34,7 +36,8 @@
     <td style="width:50px;"><a class="btn btn-sm btn-primary text-light" href="' . $SITEURL . $GSADMIN . '/load.php?id=multiMenu&addMultiMenu&menuname=' . pathinfo($file)['filename'] . '  "><i class="fa-solid fa-pen-to-square"></i></a></td>
     <td style="width:50px;"><a class="btn btn-sm btn-danger text-light" href="' . $SITEURL . $GSADMIN . '/load.php?id=multiMenu&delthis=' . pathinfo($file)['filename'] . '  "><i class="fa-solid fa-trash"></i></a></td>
  </tr>';
-        }; ?>
+        }
+        ; ?>
 
 
 
@@ -60,4 +63,5 @@ if (isset($_GET['delthis'])) {
 
     </script>
     ";
-}; ?>
+}
+; ?>

@@ -6,7 +6,7 @@ $thisfile = basename(__FILE__, ".php");
 register_plugin(
 	$thisfile, //Plugin id
 	'MultiMenu', 	//Plugin name
-	'3.0', 		//Plugin version
+	'4.0', 		//Plugin version
 	'Multicolor',  //Plugin author
 	'https://www.paypal.com/paypalme/multicol0r', //author website
 	'Plugin to create multiple menus', //Plugin description
@@ -28,6 +28,8 @@ function showMultiMenu()
 
 	if (isset($_GET['addMultiMenu'])) {
 		include(GSPLUGINPATH . 'multiMenu/addNew.php');
+	} elseif (isset($_GET['hideMenuSettings'])) {
+		include(GSPLUGINPATH . 'multiMenu/hideMenu.php');
 	} else {
 		include(GSPLUGINPATH . 'multiMenu/settings.php');
 	}
@@ -49,11 +51,29 @@ add_action('footer', 'hideMenu');
 
 function hideMenu()
 {
-	echo '<style> #metadata_window p.post-menu{display:none}
+
+	$setHideMenu = [];
+	$setHideMenu['hidemenu'] = false;
+	$setHideMenu = json_encode($setHideMenu);
+	if (!file_exists(GSDATAOTHERPATH . 'multiMenuSettings.json')) {
+		file_put_contents(GSDATAOTHERPATH . 'multiMenuSettings.json', $setHideMenu);
+	}
+	;
+
+	$checkHideMenu = file_get_contents(GSDATAOTHERPATH . 'multiMenuSettings.json');
+	$checkHideMenu = json_decode($checkHideMenu);
+
+	if ($checkHideMenu->hidemenu == 'true') {
+		echo '<style> #metadata_window p.post-menu{display:none}
 		 #menu-items{display:none !important}
 		 #sb_menumanager{display:none !important}
 		</style>';
-};
+	}
+	;
+
+
+}
+;
 
 function multiMenu($name)
 {
@@ -74,7 +94,8 @@ function multiMenu($name)
 			$check = GSDATAPAGESPATH . 'index.xml';
 		} else {
 			$check = GSDATAPAGESPATH . $item->href . '.xml';
-		};
+		}
+		;
 
 		$xml = @simplexml_load_file($check);
 
@@ -86,7 +107,7 @@ function multiMenu($name)
 				<li class="' . ($jsClass->active == 'li' ? (return_page_slug() == $item->href ? 'active current' : '') : "") . ' ' . $jsClass->classulli . ' ' . (isset($item->children) ? 'parent' : '') . '">
 				
 				<a href="'
-				. (strpos($item->href, '://') ? $item->href :  find_url($item->href, (string)$xml->parent)) .
+				. (strpos($item->href, '://') ? $item->href : find_url($item->href, (string) $xml->parent)) .
 
 				'" target="' . $item->target . '" class="' . ($jsClass->active == 'a' ? (return_page_slug() == $item->href ? 'active current' : '') : "") . ' ' . $jsClass->classullia . '">' . $item->text . '</a>';
 
@@ -99,7 +120,8 @@ function multiMenu($name)
 						$checkSub = GSDATAPAGESPATH . 'index.xml';
 					} else {
 						$checkSub = GSDATAPAGESPATH . $subitem->href . '.xml';
-					};
+					}
+					;
 
 					$xmlSub = @simplexml_load_file($checkSub);
 
@@ -107,8 +129,9 @@ function multiMenu($name)
 						echo '
 							<li class="' . $jsClass->classulliulli . ' ' . ($jsClass->active == 'li' ? (return_page_slug() == $subitem->href ? 'active current' : '') : "") . '">
 								<a  class="' . ($jsClass->active == 'a' ? (return_page_slug() == $subitem->href ? 'active current' : '') : "") . ' ' . $jsClass->classulliullia . '"
-							href="' .  (strpos($subitem->href, '://') ?  $subitem->href : find_url($subitem->href, (string)$xmlSub->parent)) . '" target="' . $subitem->target . '">' . $subitem->text . '</a>';
-					};
+							href="' . (strpos($subitem->href, '://') ? $subitem->href : find_url($subitem->href, (string) $xmlSub->parent)) . '" target="' . $subitem->target . '">' . $subitem->text . '</a>';
+					}
+					;
 
 					//sub-sub
 					if (isset($subitem->children)) {
@@ -120,37 +143,46 @@ function multiMenu($name)
 								$checkSubSub = GSDATAPAGESPATH . 'index.xml';
 							} else {
 								$checkSubSub = GSDATAPAGESPATH . $subsubitem->href . '.xml';
-							};
+							}
+							;
 
 							$xmlSubSub = @simplexml_load_file($checkSubSub);
 
 							if (file_exists($checkSubSub)) {
 								echo '
 									<li class="' . $jsClass->classulliulli . ' ' . ($jsClass->active == 'li' ? (return_page_slug() == $subsubitem->href ? 'active current' : '') : "") . '">
-									<a href="' . (strpos($subsubitem->href,  '://') ? $subsubitem->href : find_url($subsubitem->href, (string)$xmlSubSub))
+									<a href="' . (strpos($subsubitem->href, '://') ? $subsubitem->href : find_url($subsubitem->href, (string) $xmlSubSub))
 
 									. '"
 									 class="' . ($jsClass->active == 'a' ? (return_page_slug() == $subsub->href ? 'active current' : '') : "") . ' ' . $jsClass->classulliullia . '"
 									   target="' . $subsubitem->target . '">' . $subsubitem->text . '</a>
 									   </li>';
-							};
-						};
+							}
+							;
+						}
+						;
 						echo '
 							</ul>';
-					};
+					}
+					;
 
 					echo '
 						</li>';
-				};
+				}
+				;
 				echo '
 					</ul>';
-			};
+			}
+			;
 
 			echo '
 				</li>';
-		};
-	};
+		}
+		;
+	}
+	;
 
 	echo '
 		</ul>';
-};
+}
+;
