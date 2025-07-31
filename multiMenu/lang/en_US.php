@@ -18,7 +18,7 @@ $i18n['TITLELABEL'] = 'Menu Name (without space or special characters)';
 
 $i18n['CUSTOMCLASS'] = 'Custom Classes (click to show)';
 $i18n['ACTIVECLASSLABEL'] = 'Active class on';
-$i18n['CLASSFORMENU'] = 'class for menu';
+$i18n['CLASSFORMENU'] = 'Class for menu';
 
 $i18n['EDITITEMS'] = 'Edit Items (click to show)';
 $i18n['TITLE'] = 'Title';
