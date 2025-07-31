@@ -74,9 +74,10 @@
 																							}
 																						}; ?>> <?php echo i18n_r('multiMenu/ACTIVECLASSLABEL');?> [li]
 						</label>
-
+<br>
+<br>
 						<div class="form-group">
-							<label for="title"> <?php echo i18n_r('multiMenu/CLASSFORMENU');?></label>
+							<label for="title"> <?php echo i18n_r('multiMenu/CLASSFORMENU');?>  > ul</label>
 							<input type="text" name="classul" <?php
 																if (isset($_GET['menuname'])) {
 																	echo  'value="' . $jsClass->classul . '" ';
